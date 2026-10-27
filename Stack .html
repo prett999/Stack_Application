@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real World Application Of Stack</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 30px 15px;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #17365d;
+        }
+
+        .description {
+            text-align: center;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+            margin: 25px 0 15px;
+        }
+
+        input {
+            flex: 1;
+            min-width: 0;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 11px 15px;
+            border: none;
+            border-radius: 6px;
+            background-color: #1769aa;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #104c80;
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .back-button {
+            background-color: #d97706;
+        }
+
+        .clear-button {
+            background-color: #c0392b;
+        }
+
+        .current-page {
+            background-color: #e3f2fd;
+            padding: 15px;
+            margin-top: 25px;
+            border-radius: 8px;
+            color: #17365d;
+            overflow-wrap: anywhere;
+        }
+
+        h2 {
+            color: #17365d;
+            margin-top: 25px;
+        }
+
+        #history {
+            padding-left: 25px;
+        }
+
+        #history li {
+            background-color: #f5f7fa;
+            margin: 8px 0;
+            padding: 12px;
+            border-radius: 5px;
+            overflow-wrap: anywhere;
+        }
+
+        .top-page {
+            border-left: 5px solid #219653;
+            font-weight: bold;
+        }
+
+        .note {
+            margin-top: 25px;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 480px) {
+            .input-area {
+                flex-direction: column;
+            }
+
+            button {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Browser History Management</h1>
+
+    <p class="description">
+        This application demonstrates how a stack works
+        using the Last In, First Out (LIFO) principle.
+    </p>
+
+    <div class="input-area">
+        <input
+                type="text"
+                id="pageInput"
+                placeholder="Enter a page name, e.g. Google"
+        >
+
+        <button onclick="visitPage()">Visit Page</button>
+    </div>
+
+    <div class="buttons">
+        <button class="back-button" onclick="goBack()">
+            ← Back
+        </button>
+
+        <button onclick="showCurrentPage()">
+            Current Page
+        </button>
+
+        <button class="clear-button" onclick="clearHistory()">
+            Clear History
+        </button>
+    </div>
+
+    <div class="current-page">
+        <strong>Current Page:</strong>
+        <span id="currentPage">None</span>
+    </div>
+
+    <h2>Browsing History Stack</h2>
+
+    <p id="stackCount">Total pages: 0</p>
+
+    <ul id="history"></ul>
+
+    <p class="note">
+        <strong>How it works:</strong><br>
+        Push adds a page to the stack.<br>
+        Pop removes the current page when going back.<br>
+        Peek displays the current page without removing it.
+    </p>
+
+</div>
+
+<script>
+    
+    let historyStack = [];
+
+        function visitPage() {
+        const input = document.getElementById("pageInput");
+        const page = input.value.trim();
+
+        if (page === "") {
+            alert("Please enter a page name.");
+            input.focus();
+            return;
+        }
+
+        
+        historyStack.push(page);
+
+        
+        input.value = "";
+
+        
+        displayHistory();
+
+        input.focus();
+    }
+
+        function goBack() {
+        if (historyStack.length > 1) {
+            historyStack.pop();
+            displayHistory();
+        } else if (historyStack.length === 1) {
+            alert("There is no previous page.");
+        } else {
+            alert("Your browsing history is empty.");
+        }
+    }
+
+        function showCurrentPage() {
+        if (historyStack.length > 0) {
+            const currentPage =
+                historyStack[historyStack.length - 1];
+
+            document.getElementById("currentPage").textContent =
+                currentPage;
+        } else {
+            document.getElementById("currentPage").textContent =
+                "None";
+        }
+    }
+
+        function displayHistory() {
+        const historyList = document.getElementById("history");
+
+        
+        historyList.innerHTML = "";
+
+        
+        historyStack.forEach(function(page, index) {
+            const listItem = document.createElement("li");
+
+            listItem.textContent = page;
+
+            // Mark the top item of the stack
+            if (index === historyStack.length - 1) {
+                listItem.classList.add("top-page");
+                listItem.textContent += " (TOP - Current Page)";
+            }
+
+            historyList.appendChild(listItem);
+        });
+
+        
+        document.getElementById("stackCount").textContent =
+            "Total pages: " + historyStack.length;
+
+        // Update the current page
+        showCurrentPage();
+    }
+
+    
+    function clearHistory() {
+        if (historyStack.length === 0) {
+            alert("The history is already empty.");
+            return;
+        }
+
+        const confirmClear = confirm(
+            "Are you sure you want to clear the browsing history?"
+        );
+
+        if (confirmClear) {
+            historyStack = [];
+            displayHistory();
+        }
+    }
+
+    
+    document.getElementById("pageInput").addEventListener(
+        "keydown",
+        function(event) {
+            if (event.key === "Enter") {
+                visitPage();
+            }
+        }
+    );
+
+    
+    displayHistory();
+</script>
+
+</body>
+</html>
